@@ -33,5 +33,5 @@ THEN I am again presented with current and future conditions for that city
 
 The following image shows the web application's appearance and functionality:
 
-(./assets\images\06-server-side-apis-homework-demo.png)
+[!Weather Dashboard](https://imgur.com/Gtn8lqi)
 
