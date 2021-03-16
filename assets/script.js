@@ -1,4 +1,5 @@
 $(function(){
+    retrieveSearchHistory();
     $("#search-form").on("submit",function(event){
         event.preventDefault();
         var city=$("#cityName").val();
@@ -16,7 +17,6 @@ $(function(){
         console.log(response.main.humidity)
         console.log(response.wind.speed)
         
-        
         $("#city").text(cityName)
         $("#current-date").text(moment().format("MM/DD/YYYY"))
         var imageUrl = "https://openweathermap.org/img/w/" + response.weather[0].icon + ".png";
@@ -24,7 +24,20 @@ $(function(){
         $("#today-temp").text("temperature: " + response.main.temp + "F")
         $("#today-windspeed").text("windspeed: " + response.wind.speed)
         $("#today-humidity").text("humidity: " + response.main.humidity + "%")
-        storeSearchHistory(cityName)
+        
+        
+       // retrieveSearchHistory();
+       var search=JSON.parse(localStorage.getItem("searchCity"));
+       console.log(search)
+       if (jQuery.inArray(cityName,search)===-1){
+           console.log("insideIf")
+        var button=$("<button>")
+        button.text(cityName)
+        button.attr("data-city",cityName).attr("type","button")
+        button.addClass("btn btn-light btn-outline-secondary city")
+        $("#cityHistory").append(button)
+       }
+       storeSearchHistory(cityName)
     })
     }
     function fiveDayF(cityName){
@@ -41,17 +54,17 @@ $(function(){
             forecast.push(response.list[39])
             $("#Forecast").html("")
             for(var i=0;i < forecast.length; i++){
-                var div1=$("<div>")
-                var div2=$("<div>")
+                var column=$("<div>").addClass("col border border-primary rounded bg-primary text-white mr-2")
+                var row=$("<div>").addClass("row p-2 bd-highlight")
                 var date=forecast[i].dt_txt
                 var dateElement=$("<div>").text(moment(date).format("MM/DD/YYYY"))
                 var imageUrl = "https://openweathermap.org/img/w/" + forecast[i].weather[0].icon + ".png"
                 var imageElement=$("<img src="+imageUrl+"></img>")
                 var temperatureElement=$("<div>").text("temperature: " + forecast[i].main.temp + "F")
                 var humidityElement=$("<div>").text("humidity: " + forecast[i].main.humidity + "%")
-                div2.append(dateElement,imageElement, temperatureElement,humidityElement)
-                div1.append(div2)
-                $("#Forecast").append(div1)
+                row.append(dateElement,imageElement, temperatureElement,humidityElement)
+                column.append(row)
+                $("#Forecast").append(column)
             }
         })
         
@@ -68,5 +81,18 @@ $(function(){
             search.push(cityName) 
         }
         localStorage.setItem("searchCity",JSON.stringify(search))
+    }
+    function retrieveSearchHistory(){
+        var city=JSON.parse(localStorage.getItem("searchCity"))
+        console.log(city)
+        if(city!=null||city!=undefined){
+            for (var i=0;i<city.length;i++){
+                var button=$("<button>")
+                button.text(city[i])
+                button.attr("data-city",city[i]).attr("type","button")
+                button.addClass("btn btn-light btn-outline-secondary city")
+                $("#cityHistory").append(button)
+            }
+        }
     }
 })
