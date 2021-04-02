@@ -13,6 +13,7 @@ $(function(){
         url: qurl,
         method:"GET"
     }).then(function(response){
+        console.log(response)
         console.log(response.main.temp)
         console.log(response.main.humidity)
         console.log(response.wind.speed)
@@ -24,6 +25,7 @@ $(function(){
         $("#today-temp").text("temperature: " + response.main.temp + "F")
         $("#today-windspeed").text("windspeed: " + response.wind.speed)
         $("#today-humidity").text("humidity: " + response.main.humidity + "%")
+        getUvIndex(response.coord.lat, response.coord.lon);
         
         
        // retrieveSearchHistory();
@@ -38,6 +40,16 @@ $(function(){
         $("#cityHistory").append(button)
        }
        storeSearchHistory(cityName)
+    })
+    }
+    function getUvIndex(lat, lon){
+        var qurl="http://api.openweathermap.org/data/2.5/uvi?lat=" + lat + "&lon=" + lon + "&appid=2a0306a930e5a4387b41ca2adaae227d";
+    $.ajax({
+        url: qurl,
+        method:"GET"
+    }).then(function(response){
+        $("#today-uv").text("UV Index: " + response.value);
+        $("#today-uv").css( 'color', response.value >= 7 ? 'red' : response.value >= 3 ? 'yellow' : 'green');
     })
     }
     function fiveDayF(cityName){
@@ -95,4 +107,12 @@ $(function(){
             }
         }
     }
+    $("#cityHistory").on('click', event => {
+        console.log(event)
+        var button = $(event.target);
+        var city = button.text();
+        // call out search function with that city
+        getForecast(city);
+        fiveDayF(city);
+    })
 })
